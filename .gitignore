@@ -1,0 +1,31 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables and API keys
+.env
+
+# VS Code
+.vscode/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Local ChromaDB vector database
+chroma_db/
+
+# Generated processed data
+data/processed/*
+
+# Keep processed data directory
+!data/processed/.gitkeep
