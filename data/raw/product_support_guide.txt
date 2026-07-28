@@ -1,0 +1,50 @@
+NORTHSTAR TECHNOLOGIES
+PRODUCT SUPPORT AND TROUBLESHOOTING GUIDE
+Product: Northstar Cloud Workspace
+Version 4.2
+
+1. SUPPORT LEVELS
+
+Level 1 support handles common user issues including login problems, password resets, basic configuration questions, and standard connectivity problems.
+
+Level 2 support handles application errors, integration failures, repeated service interruptions, and issues that require technical investigation.
+
+Level 3 support handles confirmed product defects, complex infrastructure failures, and engineering-level incidents.
+
+2. ERROR CODE ERR-401
+
+ERR-401 indicates that the user's authentication credentials are invalid or have expired.
+
+The user should sign in again and verify that the correct account is being used. If the problem continues after authentication is refreshed, the issue should be escalated to Level 1 support.
+
+3. ERROR CODE ERR-504
+
+ERR-504 indicates that the application did not receive a response from an upstream service within the configured timeout period.
+
+The user should retry the operation after 60 seconds. If ERR-504 occurs three or more times within 15 minutes, the issue should be escalated to Level 2 support for investigation.
+
+4. ERROR CODE ERR-DB-17
+
+ERR-DB-17 indicates that the application could not establish a connection to the primary database service.
+
+Users should not repeatedly restart the application. The incident must be escalated immediately to Level 2 support. Level 2 should verify database availability and connectivity before escalating to Level 3 engineering.
+
+5. SERVICE AVAILABILITY
+
+The production service has a target monthly availability of 99.9%, excluding scheduled maintenance windows.
+
+Scheduled maintenance should normally be announced to customers at least 48 hours before the maintenance window.
+
+6. SUPPORT RESPONSE TARGETS
+
+Critical incidents have an initial response target of 15 minutes.
+
+High-priority incidents have an initial response target of one hour.
+
+Normal-priority support requests have an initial response target of eight business hours.
+
+7. ESCALATION PROCEDURE
+
+Issues should only be escalated after the troubleshooting steps for the relevant error have been completed, unless the guide explicitly requires immediate escalation.
+
+Escalation records should include the error code, timestamp, affected user or service, troubleshooting already performed, and relevant diagnostic information.

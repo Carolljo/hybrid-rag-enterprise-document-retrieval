@@ -1,0 +1,48 @@
+NORTHSTAR TECHNOLOGIES
+INFORMATION SECURITY POLICY
+Policy ID: SEC-101
+Version 3.0
+
+1. PASSWORD REQUIREMENTS
+
+Corporate account passwords must contain at least 14 characters. Passwords should contain a combination of uppercase letters, lowercase letters, numbers, and special characters.
+
+Employees must not share passwords or store them in unapproved documents, spreadsheets, or messaging applications.
+
+2. MULTI-FACTOR AUTHENTICATION
+
+Multi-factor authentication (MFA) is mandatory for corporate email, cloud administration tools, source-code repositories, and remote access to internal systems.
+
+Employees must immediately report unexpected MFA approval requests to the IT Security team.
+
+3. REMOTE ACCESS
+
+Remote connections to restricted internal systems must use the company-approved virtual private network (VPN). Employees must not disable endpoint-security software while connected to company systems.
+
+Public or shared computers must not be used to access restricted company information.
+
+4. SECURITY INCIDENT REPORTING
+
+Suspected security incidents must be reported to the Security Operations team within one hour of discovery.
+
+Examples include stolen devices, suspected malware, unauthorized account access, accidental disclosure of confidential information, and unexpected MFA requests.
+
+The internal incident reference for suspected account compromise is SEC-401.
+
+5. DATA CLASSIFICATION
+
+Company information is classified as Public, Internal, Confidential, or Restricted.
+
+Restricted information requires the highest level of protection and must only be accessed by explicitly authorized personnel.
+
+6. DEVICE SECURITY
+
+Company laptops must use full-disk encryption and approved endpoint-protection software. Operating-system and security updates must not be intentionally disabled.
+
+Lost or stolen company devices must be reported immediately to both the employee's manager and the IT Security team.
+
+7. CREDENTIAL AND API KEY SECURITY
+
+API keys, access tokens, passwords, and other credentials must never be committed to source-code repositories.
+
+Development credentials must be stored using approved environment-variable or secrets-management mechanisms.
