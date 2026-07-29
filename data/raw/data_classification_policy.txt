@@ -1,0 +1,75 @@
+DATA CLASSIFICATION POLICY
+
+Purpose
+
+This policy defines how company information must be classified, handled, stored, transmitted, and protected according to its sensitivity.
+
+1. Classification Levels
+
+Company information is classified into four levels:
+
+Public — Information approved for public distribution.
+
+Internal — Information intended for employees and authorized business partners.
+
+Confidential — Sensitive business information that could cause harm if disclosed without authorization.
+
+Restricted — Highly sensitive information requiring the strongest access and security controls.
+
+2. Public Information
+
+Public information may be shared externally after it has been approved for public distribution.
+
+Examples may include published marketing materials, public product documentation, and approved press releases.
+
+3. Internal Information
+
+Internal information must only be shared with employees or authorized parties who have a legitimate business need.
+
+Employees must use approved company systems when storing or transmitting internal information.
+
+4. Confidential Information
+
+Confidential information must only be accessed by individuals with an authorized business need.
+
+Confidential information must be stored using approved company storage systems and transmitted using approved secure communication channels.
+
+Employees must take precautions to prevent unauthorized individuals from viewing confidential information.
+
+5. Restricted Information
+
+Restricted information requires the highest level of protection.
+
+Access must be limited according to the principle of least privilege.
+
+When restricted information is accessed remotely, employees must use the company-approved virtual private network (VPN) and required authentication controls.
+
+Restricted information must not be stored on personal or unmanaged devices.
+
+6. Data Transmission
+
+Confidential and restricted information must not be transmitted through personal email accounts, unapproved messaging applications, or unauthorized file-sharing services.
+
+Approved encrypted communication and file-transfer systems must be used where required.
+
+7. Data Storage
+
+Sensitive information must be stored only in approved locations.
+
+Employees must not copy confidential or restricted information to personal cloud-storage accounts, removable media, or unmanaged devices without explicit authorization.
+
+8. Reporting Exposure
+
+Employees who accidentally disclose, transmit, or expose confidential or restricted information must report the incident promptly to the IT security team.
+
+Suspected unauthorized access to sensitive information must also be reported.
+
+9. Employee Responsibilities
+
+Employees are responsible for understanding the classification of information they access and applying the appropriate handling requirements.
+
+When classification is unclear, employees should consult the information owner or IT security team before sharing the information.
+
+10. Compliance
+
+Failure to follow information-classification and handling requirements may result in removal of access privileges and further action under applicable company policies.

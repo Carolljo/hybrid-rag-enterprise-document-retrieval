@@ -1,0 +1,59 @@
+REMOTE WORK POLICY
+
+Purpose
+
+This policy defines security, communication, and operational requirements for employees working remotely.
+
+1. Remote Access
+
+Employees accessing internal company systems from outside company facilities must use the company-approved virtual private network (VPN).
+
+Restricted internal systems must not be accessed through public or unapproved networks without an active corporate VPN connection.
+
+Employees must not share VPN credentials, authentication tokens, or company account passwords with another person.
+
+2. Device Security
+
+Remote work must be performed using company-managed devices unless explicit approval has been granted for another device.
+
+Employees must keep operating systems, security patches, antivirus software, and endpoint-security tools up to date.
+
+Endpoint-security software must not be disabled while accessing company resources.
+
+3. Authentication
+
+Multi-factor authentication (MFA) must be enabled for supported company systems.
+
+Employees are responsible for protecting authentication codes, security tokens, and recovery credentials.
+
+Suspicious authentication requests must be reported to the IT security team.
+
+4. Public Networks
+
+Employees should avoid accessing sensitive company information over unsecured public Wi-Fi.
+
+When public Wi-Fi must be used, employees must connect through the approved corporate VPN before accessing internal systems.
+
+5. Confidential Information
+
+Confidential and restricted company information must not be displayed where unauthorized individuals can view it.
+
+Employees working from shared or public locations must take reasonable precautions to prevent unauthorized access to company information.
+
+Restricted information must not be downloaded to personal or unmanaged devices.
+
+6. Communication
+
+Employees working remotely must remain reachable through approved company communication channels during their agreed working hours.
+
+Sensitive company information must only be transmitted through approved communication and file-sharing systems.
+
+7. Security Incidents
+
+Lost or stolen company devices must be reported immediately to the IT security team.
+
+Suspected credential theft, unauthorized access, malware, or accidental exposure of restricted information must also be reported promptly.
+
+8. Compliance
+
+Failure to follow remote-work security requirements may result in suspension of remote access privileges and further action under applicable company policies.

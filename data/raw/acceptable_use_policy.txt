@@ -1,0 +1,79 @@
+ACCEPTABLE USE POLICY
+
+Purpose
+
+This policy defines acceptable and prohibited use of company devices, networks, accounts, applications, and technology resources.
+
+1. Authorized Use
+
+Company technology resources are primarily provided for legitimate business activities.
+
+Employees must use company systems responsibly and in accordance with applicable security, privacy, and workplace policies.
+
+Limited personal use may be permitted when it does not interfere with work responsibilities, create security risks, or violate company policies.
+
+2. Company Devices
+
+Employees must take reasonable precautions to protect company laptops, mobile devices, and other equipment from loss, theft, or unauthorized access.
+
+Company-managed security software, antivirus tools, endpoint protection, and device-management controls must not be disabled or bypassed.
+
+Lost or stolen company devices must be reported immediately.
+
+3. User Accounts
+
+Employees must use only accounts and access permissions assigned or authorized for them.
+
+Passwords, authentication tokens, and multi-factor authentication codes must not be shared with another person.
+
+Employees must not attempt to gain unauthorized access to systems, accounts, files, or information.
+
+4. Internet and Network Use
+
+Company networks must not be used for unlawful activities, malicious activity, unauthorized scanning, or attempts to bypass security controls.
+
+When accessing restricted internal systems remotely, employees must follow approved remote-access requirements, including use of the corporate VPN where required.
+
+5. Software Installation
+
+Employees must not install unauthorized software on company-managed devices.
+
+Software required for business purposes should be obtained through approved company processes or authorized software repositories.
+
+6. Email and Messaging
+
+Company communication systems must be used responsibly.
+
+Employees must exercise caution with unexpected links, attachments, authentication requests, and messages requesting sensitive information.
+
+Suspected phishing messages should be reported through approved security-reporting channels.
+
+7. Company Information
+
+Confidential and restricted company information must only be accessed, stored, or transmitted using approved systems.
+
+Employees must not upload sensitive company information to personal cloud-storage services, personal email accounts, or unauthorized external applications.
+
+8. Removable Media
+
+Use of removable storage devices may be restricted.
+
+Employees must not copy confidential or restricted information to unauthorized removable media.
+
+9. Monitoring
+
+Company technology resources may be logged or monitored where permitted by applicable law and company policy for security, operational, and compliance purposes.
+
+Employees should not assume that activity performed using company resources is private.
+
+10. Security Incidents
+
+Suspected malware, credential compromise, unauthorized access, lost devices, or accidental exposure of sensitive information must be reported promptly to the IT security team.
+
+11. Prohibited Activities
+
+Employees must not use company technology resources to distribute malware, intentionally damage systems, circumvent security controls, perform unauthorized access, or conduct activities prohibited by law or company policy.
+
+12. Compliance
+
+Violations of this policy may result in restriction or removal of technology access and further action under applicable company policies.

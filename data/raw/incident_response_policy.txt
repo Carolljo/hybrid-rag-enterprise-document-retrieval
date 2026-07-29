@@ -1,0 +1,75 @@
+INCIDENT RESPONSE POLICY
+
+Purpose
+
+This policy defines how employees must identify, report, and respond to suspected information-security incidents.
+
+1. Security Incidents
+
+A security incident includes any event that may compromise the confidentiality, integrity, or availability of company systems or information.
+
+Examples include unauthorized access, malware infections, credential theft, lost devices, phishing attempts, and accidental disclosure of sensitive information.
+
+2. Employee Reporting
+
+Employees must report suspected security incidents promptly to the IT security team.
+
+Employees should provide relevant information about the incident, including the affected system, approximate time, observed activity, and any actions already taken.
+
+Employees must not intentionally conceal or delay reporting a suspected security incident.
+
+3. Lost or Stolen Devices
+
+Lost or stolen company laptops, phones, security tokens, or other devices must be reported immediately.
+
+Employees should not attempt to remotely access or recover a stolen device unless instructed by authorized personnel.
+
+The IT security team may remotely lock or erase company-managed devices when necessary to protect company information.
+
+4. Credential Compromise
+
+Employees who suspect that a password, authentication token, or other credential has been compromised must report the incident immediately.
+
+Affected credentials must be changed or revoked as directed by the IT security team.
+
+Unexpected multi-factor authentication requests may indicate attempted unauthorized access and must be denied and reported.
+
+5. Malware and Suspicious Activity
+
+Employees who suspect malware infection must disconnect the affected device from company networks when it is safe to do so and contact the IT security team.
+
+Employees must not disable endpoint-security tools or attempt to remove sophisticated malware without authorization.
+
+Suspicious login activity, unusual system behavior, and unexpected security alerts must also be reported.
+
+6. Sensitive Information Exposure
+
+Accidental disclosure or unauthorized exposure of confidential or restricted information must be reported promptly.
+
+Employees should provide details about what information was exposed, how the exposure occurred, and who may have received or accessed the information.
+
+7. Incident Investigation
+
+The IT security team is responsible for coordinating investigation, containment, remediation, and recovery activities.
+
+Employees must cooperate with authorized investigations and preserve relevant information when instructed.
+
+8. Communication
+
+Employees must not publicly discuss security incidents or communicate incident details to unauthorized external parties.
+
+External notifications must be handled by authorized company representatives according to applicable legal and business requirements.
+
+9. Recovery
+
+Systems affected by a security incident may only be returned to normal operation after appropriate security checks and authorization.
+
+Credentials, access permissions, or devices may be reset or replaced as part of recovery.
+
+10. Post-Incident Review
+
+Significant incidents should be reviewed after resolution to identify causes, lessons learned, and opportunities to improve security controls.
+
+11. Compliance
+
+Failure to report or appropriately respond to a security incident may result in removal of system access and further action under applicable company policies.
