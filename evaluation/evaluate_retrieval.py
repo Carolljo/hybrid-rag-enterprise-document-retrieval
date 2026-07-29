@@ -40,7 +40,7 @@ def get_document_source(
 
 
 def evaluate_retrieval() -> None:
-    """Evaluate whether retrieval returns expected source documents."""
+    """Evaluate retrieval against expected source documents."""
     questions = load_evaluation_questions()
 
     pipeline = RAGPipeline()
@@ -52,13 +52,16 @@ def evaluate_retrieval() -> None:
         if item["answerable"]
     ]
 
-    correct = 0
+    hit_count = 0
+    total_expected_sources = 0
+    total_matched_sources = 0
 
     print("\nRetrieval Evaluation")
     print("=" * 70)
 
     for item in answerable_questions:
         question = item["question"]
+
         expected_sources = set(
             item["expected_sources"]
         )
@@ -84,7 +87,22 @@ def evaluate_retrieval() -> None:
         passed = bool(matched_sources)
 
         if passed:
-            correct += 1
+            hit_count += 1
+
+        total_expected_sources += len(
+            expected_sources
+        )
+
+        total_matched_sources += len(
+            matched_sources
+        )
+
+        question_recall = (
+            len(matched_sources)
+            / len(expected_sources)
+            if expected_sources
+            else 0.0
+        )
 
         print(
             f"\nQuestion {item['id']}: "
@@ -107,15 +125,29 @@ def evaluate_retrieval() -> None:
         )
 
         print(
+            f"Source Recall: "
+            f"{question_recall:.2%}"
+        )
+
+        print(
             "Result:",
             "PASS" if passed else "FAIL",
         )
 
-    total = len(answerable_questions)
+    total_questions = len(
+        answerable_questions
+    )
 
     hit_rate = (
-        correct / total
-        if total
+        hit_count / total_questions
+        if total_questions
+        else 0.0
+    )
+
+    overall_source_recall = (
+        total_matched_sources
+        / total_expected_sources
+        if total_expected_sources
         else 0.0
     )
 
@@ -124,7 +156,8 @@ def evaluate_retrieval() -> None:
     print("=" * 70)
 
     print(
-        f"Correct: {correct}/{total}"
+        f"Questions with relevant source: "
+        f"{hit_count}/{total_questions}"
     )
 
     print(
@@ -132,7 +165,17 @@ def evaluate_retrieval() -> None:
         f"{hit_rate:.2%}"
     )
 
+    print(
+        f"Expected sources retrieved: "
+        f"{total_matched_sources}/"
+        f"{total_expected_sources}"
+    )
+
+    print(
+        f"Overall Source Recall: "
+        f"{overall_source_recall:.2%}"
+    )
+
 
 if __name__ == "__main__":
     evaluate_retrieval()
-
