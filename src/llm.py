@@ -1,9 +1,8 @@
 """Gemini LLM integration for grounded answer generation."""
 
-import os
-
-from dotenv import load_dotenv
 from google import genai
+
+from api.config import settings
 
 
 DEFAULT_MODEL = "gemini-3.6-flash"
@@ -12,26 +11,14 @@ DEFAULT_MODEL = "gemini-3.6-flash"
 def create_client() -> genai.Client:
     """
     Create a Gemini client using the API key
-    stored in the environment.
+    from the centralized application settings.
 
     Returns:
         Configured Gemini client.
-
-    Raises:
-        ValueError:
-            If GEMINI_API_KEY is not available.
     """
-    load_dotenv()
-
-    api_key = os.getenv("GEMINI_API_KEY")
-
-    if not api_key:
-        raise ValueError(
-            "GEMINI_API_KEY was not found. "
-            "Add it to the .env file."
-        )
-
-    return genai.Client(api_key=api_key)
+    return genai.Client(
+        api_key=settings.gemini_api_key
+    )
 
 
 def generate_response(

@@ -1,21 +1,28 @@
 """Application configuration for the Hybrid RAG API."""
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     """
-    Application settings.
+    Centralized application configuration.
 
-    Centralizes configuration values used across the API.
-    These settings can later be extended with environment variables,
-    database configuration, vector store settings, and model settings.
+    Loads configuration values from environment variables and the
+    local .env file while keeping secrets out of the source code.
     """
 
-    app_name: str = "Hybrid RAG Enterprise Document Retrieval"
+    app_name: str = "Hybrid RAG Enterprise Document Retrieval API"
     app_version: str = "1.0.0"
     debug: bool = False
 
+    gemini_api_key: str
 
-# Create a reusable settings instance
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+
 settings = Settings()
