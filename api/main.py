@@ -5,6 +5,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException
 
+from api.config import settings
 from api.schemas import AnswerResponse, QuestionRequest
 from src.rag_pipeline import RAGPipeline
 
@@ -27,12 +28,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Hybrid RAG Enterprise Document Retrieval API",
+    title=settings.app_name,
     description=(
         "API for answering questions from enterprise documents "
         "using hybrid retrieval, reranking, and grounded generation."
     ),
-    version="1.0.0",
+    version=settings.app_version,
     lifespan=lifespan,
 )
 
