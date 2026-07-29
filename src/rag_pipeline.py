@@ -3,6 +3,7 @@
 from typing import Any
 
 from src.bm25_retriever import build_bm25
+from src.citations import extract_citations
 from src.document_loader import load_documents
 from src.embeddings import (
     embed_documents,
@@ -31,7 +32,8 @@ class RAGPipeline:
 
     The pipeline loads enterprise documents, builds semantic
     and BM25 retrieval systems, reranks retrieved candidates,
-    and generates grounded answers using Gemini.
+    generates grounded answers using Gemini, and returns
+    structured source citations.
     """
 
     def __init__(
@@ -66,7 +68,8 @@ class RAGPipeline:
 
     def initialize(self) -> None:
         """
-        Load models, documents, and retrieval indexes.
+        Load documents, models, retrieval indexes,
+        vector database, reranker, and Gemini client.
         """
         print("Loading enterprise documents...")
         raw_documents = load_documents(
@@ -158,15 +161,15 @@ class RAGPipeline:
         question: str,
     ) -> dict[str, Any]:
         """
-        Generate a grounded answer to a user question.
+        Generate a grounded answer with structured citations.
 
         Args:
             question:
                 User question.
 
         Returns:
-            Dictionary containing the generated answer
-            and retrieved source chunks.
+            Dictionary containing the user question,
+            generated answer, and structured citations.
         """
         if self.client is None:
             raise RuntimeError(
@@ -187,10 +190,14 @@ class RAGPipeline:
             prompt=prompt,
         )
 
+        citations = extract_citations(
+            retrieved_documents
+        )
+
         return {
             "question": question,
             "answer": answer,
-            "sources": retrieved_documents,
+            "citations": citations,
         }
 
 
@@ -209,15 +216,15 @@ if __name__ == "__main__":
     print("\nAnswer:")
     print(result["answer"])
 
-    print("\nRetrieved Sources")
+    print("\nCitations")
     print("=" * 70)
 
-    for index, source in enumerate(
-        result["sources"],
+    for index, citation in enumerate(
+        result["citations"],
         start=1,
     ):
         print(
             f"{index}. "
-            f"{source['metadata']['source']} "
-            f"(Chunk {source['metadata']['chunk_id']})"
+            f"{citation['source']} "
+            f"(Chunk {citation['chunk_id']})"
         )
