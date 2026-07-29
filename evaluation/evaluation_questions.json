@@ -1,0 +1,109 @@
+[
+  {
+    "id": 1,
+    "question": "What is the VPN policy for remote access?",
+    "expected_sources": [
+      "remote_work_policy.txt",
+      "password_access_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 2,
+    "question": "What should an employee do if their password or authentication credential is compromised?",
+    "expected_sources": [
+      "password_access_policy.txt",
+      "incident_response_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 3,
+    "question": "What are the requirements for handling restricted information?",
+    "expected_sources": [
+      "data_classification_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 4,
+    "question": "What should employees do if a company laptop is lost or stolen?",
+    "expected_sources": [
+      "incident_response_policy.txt",
+      "acceptable_use_policy.txt",
+      "remote_work_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 5,
+    "question": "Can employees disable endpoint-security software?",
+    "expected_sources": [
+      "it_security_policy.txt",
+      "acceptable_use_policy.txt",
+      "remote_work_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 6,
+    "question": "How should employees request planned annual leave?",
+    "expected_sources": [
+      "leave_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 7,
+    "question": "What documentation is required when submitting a business expense?",
+    "expected_sources": [
+      "expense_reimbursement_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 8,
+    "question": "Can employees share passwords during a work handover?",
+    "expected_sources": [
+      "leave_policy.txt",
+      "password_access_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 9,
+    "question": "What should employees do when they receive an unexpected MFA request?",
+    "expected_sources": [
+      "password_access_policy.txt",
+      "incident_response_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 10,
+    "question": "Can confidential company information be uploaded to a personal cloud storage account?",
+    "expected_sources": [
+      "data_classification_policy.txt",
+      "acceptable_use_policy.txt"
+    ],
+    "answerable": true
+  },
+  {
+    "id": 11,
+    "question": "What is the company's annual revenue?",
+    "expected_sources": [],
+    "answerable": false
+  },
+  {
+    "id": 12,
+    "question": "Who is the CEO of the company?",
+    "expected_sources": [],
+    "answerable": false
+  },
+  {
+    "id": 13,
+    "question": "What is the company's current stock price?",
+    "expected_sources": [],
+    "answerable": false
+  }
+]
