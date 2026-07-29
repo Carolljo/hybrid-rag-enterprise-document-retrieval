@@ -113,6 +113,22 @@ class RAGPipeline:
 
         print("RAG pipeline initialized successfully.")
 
+    def is_ready(self) -> bool:
+        """
+        Return whether all required RAG components
+        have been initialized successfully.
+        """
+        return all(
+            component is not None
+            for component in (
+                self.embedding_model,
+                self.reranker,
+                self.collection,
+                self.bm25,
+                self.client,
+            )
+        )
+
     def retrieve(
         self,
         question: str,

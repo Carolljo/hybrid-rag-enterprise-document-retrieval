@@ -40,10 +40,17 @@ app = FastAPI(
 
 @app.get("/health")
 def health_check() -> dict[str, str]:
-    """Return API health status."""
-    return {
-        "status": "healthy",
-    }
+    """Return API and RAG pipeline health status."""
+    if rag_pipeline.is_ready():
+        return {
+            "status": "healthy",
+            "rag_pipeline": "ready",
+        }
+
+    raise HTTPException(
+        status_code=503,
+        detail="RAG pipeline is not ready.",
+    )
 
 
 @app.post(
