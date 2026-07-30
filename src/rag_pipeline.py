@@ -4,7 +4,10 @@ from typing import Any
 
 from api.config import settings
 from src.bm25_retriever import build_bm25
-from src.citations import extract_citations
+from src.citations import (
+    extract_citations,
+    verify_citations,
+)
 from src.document_loader import load_documents
 from src.embeddings import (
     embed_documents,
@@ -33,8 +36,8 @@ class RAGPipeline:
 
     The pipeline loads enterprise documents, builds semantic
     and BM25 retrieval systems, reranks retrieved candidates,
-    generates grounded answers using Gemini, and returns
-    structured source citations.
+    generates grounded answers using Gemini, verifies citation
+    provenance, and returns structured source citations.
 
     Mock mode allows the complete retrieval pipeline to run
     without making Gemini API requests.
@@ -186,20 +189,51 @@ class RAGPipeline:
             top_k=self.rerank_k,
         )
 
+    @staticmethod
+    def calculate_citation_confidence(
+        citations: list[dict[str, Any]],
+    ) -> float:
+        """
+        Calculate citation provenance confidence.
+
+        The score represents the proportion of citations
+        verified against retrieved document chunks.
+
+        Args:
+            citations:
+                Citation dictionaries containing verification status.
+
+        Returns:
+            Citation provenance confidence between 0.0 and 1.0.
+        """
+        if not citations:
+            return 0.0
+
+        verified_count = sum(
+            1
+            for citation in citations
+            if citation.get("verified", False)
+        )
+
+        return round(
+            verified_count / len(citations),
+            3,
+        )
+
     def answer(
         self,
         question: str,
     ) -> dict[str, Any]:
         """
-        Generate a grounded answer with structured citations.
+        Generate a grounded answer with verified citations.
 
         Args:
             question:
                 User question.
 
         Returns:
-            Dictionary containing the user question,
-            generated answer, and structured citations.
+            Dictionary containing the question, generated answer,
+            verified citations, and citation provenance confidence.
         """
         if not self.is_ready():
             raise RuntimeError(
@@ -212,6 +246,17 @@ class RAGPipeline:
 
         citations = extract_citations(
             retrieved_documents
+        )
+
+        verified_citations = verify_citations(
+            citations,
+            retrieved_documents,
+        )
+
+        citation_confidence = (
+            self.calculate_citation_confidence(
+                verified_citations
+            )
         )
 
         if settings.mock_mode:
@@ -233,7 +278,8 @@ class RAGPipeline:
         return {
             "question": question,
             "answer": answer,
-            "citations": citations,
+            "citations": verified_citations,
+            "citation_confidence": citation_confidence,
         }
 
 
@@ -262,5 +308,11 @@ if __name__ == "__main__":
         print(
             f"{index}. "
             f"{citation['source']} "
-            f"(Chunk {citation['chunk_id']})"
+            f"(Chunk {citation['chunk_id']}) "
+            f"- Verified: {citation['verified']}"
         )
+
+    print(
+        "\nCitation Confidence: "
+        f"{result['citation_confidence']:.1%}"
+    )

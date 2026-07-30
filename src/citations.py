@@ -43,6 +43,49 @@ def extract_citations(
     return citations
 
 
+def verify_citations(
+    citations: list[dict[str, Any]],
+    documents: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """
+    Verify that citations reference retrieved document chunks.
+
+    Args:
+        citations:
+            Structured citations extracted from retrieved documents.
+
+        documents:
+            Retrieved and reranked document chunks used as context.
+
+    Returns:
+        Citation dictionaries containing verification status.
+    """
+    available_chunks = {
+        (
+            document.get("metadata", {}).get("source"),
+            document.get("metadata", {}).get("chunk_id"),
+        )
+        for document in documents
+    }
+
+    verified_citations = []
+
+    for citation in citations:
+        citation_key = (
+            citation.get("source"),
+            citation.get("chunk_id"),
+        )
+
+        verified_citations.append(
+            {
+                **citation,
+                "verified": citation_key in available_chunks,
+            }
+        )
+
+    return verified_citations
+
+
 def format_citations(
     citations: list[dict[str, Any]],
 ) -> list[str]:
@@ -92,10 +135,18 @@ if __name__ == "__main__":
 
     citations = extract_citations(test_documents)
 
+    verified_citations = verify_citations(
+        citations,
+        test_documents,
+    )
+
     print("Structured Citations:")
     print(citations)
 
+    print("\nVerified Citations:")
+    print(verified_citations)
+
     print("\nFormatted Citations:")
 
-    for citation in format_citations(citations):
+    for citation in format_citations(verified_citations):
         print(f"- {citation}")

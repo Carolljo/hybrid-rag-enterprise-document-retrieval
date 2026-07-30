@@ -18,6 +18,7 @@ class CitationResponse(BaseModel):
 
     source: str
     chunk_id: int | str
+    verified: bool
 
 
 class AnswerResponse(BaseModel):
@@ -26,3 +27,12 @@ class AnswerResponse(BaseModel):
     question: str
     answer: str
     citations: list[CitationResponse]
+    citation_confidence: float = Field(
+        ...,
+        ge=0.0,
+        le=1.0,
+        description=(
+            "Proportion of returned citations verified against "
+            "retrieved document chunks."
+        ),
+    )
