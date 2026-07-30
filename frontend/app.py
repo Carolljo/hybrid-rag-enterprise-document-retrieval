@@ -4,10 +4,13 @@ from typing import Any
 
 import requests
 import streamlit as st
+import os
 
 
-API_URL = "http://127.0.0.1:8000/ask"
-
+API_URL = os.getenv(
+    "RAG_API_URL",
+    "http://127.0.0.1:8000/ask",
+)
 
 def query_api(question: str) -> dict[str, Any]:
     """
