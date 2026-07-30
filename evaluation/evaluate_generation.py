@@ -1,7 +1,6 @@
 """Evaluate hallucination resistance on unanswerable questions."""
 
 import json
-import time
 from pathlib import Path
 from typing import Any
 
@@ -12,11 +11,13 @@ EVALUATION_FILE = Path(
     "evaluation/evaluation_questions.json"
 )
 
-REQUEST_DELAY_SECONDS = 20
+EXPECTED_REFUSAL = (
+    "I cannot determine the answer from the provided documents."
+)
 
 
 def load_evaluation_questions() -> list[dict[str, Any]]:
-    """Load evaluation questions."""
+    """Load evaluation questions from the JSON dataset."""
     with EVALUATION_FILE.open(
         "r",
         encoding="utf-8",
@@ -24,8 +25,23 @@ def load_evaluation_questions() -> list[dict[str, Any]]:
         return json.load(file)
 
 
+def is_correct_refusal(answer: str) -> bool:
+    """
+    Check whether the generated answer correctly refuses
+    an unsupported question.
+
+    Args:
+        answer:
+            Generated answer returned by the RAG pipeline.
+
+    Returns:
+        True when the expected refusal statement is present.
+    """
+    return EXPECTED_REFUSAL.lower() in answer.lower()
+
+
 def evaluate_generation() -> None:
-    """Evaluate generation on unanswerable questions."""
+    """Evaluate hallucination resistance on unanswerable questions."""
     questions = load_evaluation_questions()
 
     unanswerable_questions = [
@@ -37,36 +53,44 @@ def evaluate_generation() -> None:
     pipeline = RAGPipeline()
     pipeline.initialize()
 
+    correct_refusals = 0
+    evaluated_questions = 0
+
     print("\nUnanswerable Question Evaluation")
     print("=" * 70)
 
-    for index, item in enumerate(
-        unanswerable_questions,
-        start=1,
-    ):
+    for item in unanswerable_questions:
         question = item["question"]
 
-        print(f"\nQuestion {item['id']}: {question}")
+        print(
+            f"\nQuestion {item['id']}: "
+            f"{question}"
+        )
         print("Expected: UNANSWERABLE")
 
         try:
             result = pipeline.answer(question)
 
+            answer = result["answer"]
+            passed = is_correct_refusal(answer)
+
+            evaluated_questions += 1
+
+            if passed:
+                correct_refusals += 1
+
             print("\nAnswer:")
-            print(result["answer"])
+            print(answer)
 
-            print("\nCitations:")
+            print(
+                "\nResult:",
+                "PASS" if passed else "FAIL",
+            )
 
-            citations = result["citations"]
-
-            if citations:
-                for citation in citations:
-                    print(
-                        f"- {citation['source']} "
-                        f"(Chunk {citation['chunk_id']})"
-                    )
-            else:
-                print("- None")
+            print(
+                "Citation Confidence:",
+                result["citation_confidence"],
+            )
 
         except Exception as error:
             error_message = str(error)
@@ -79,23 +103,43 @@ def evaluate_generation() -> None:
             if (
                 "RESOURCE_EXHAUSTED" in error_message
                 or "429" in error_message
+                or "503" in error_message
+                or "UNAVAILABLE" in error_message
             ):
-                print("\nGemini API quota exhausted.")
                 print(
-                    "Evaluation stopped to avoid "
-                    "unnecessary API requests."
+                    "\nGemini API is temporarily unavailable. "
+                    "Evaluation stopped."
                 )
-                print("-" * 70)
                 break
 
         print("-" * 70)
 
-        if index < len(unanswerable_questions):
-            print(
-                f"Waiting {REQUEST_DELAY_SECONDS} seconds "
-                "before the next request..."
-            )
-            time.sleep(REQUEST_DELAY_SECONDS)
+    refusal_rate = (
+        correct_refusals / evaluated_questions
+        if evaluated_questions
+        else 0.0
+    )
+
+    print("\n" + "=" * 70)
+    print("Generation Evaluation Summary")
+    print("=" * 70)
+
+    print(
+        "Unanswerable Questions Evaluated: "
+        f"{evaluated_questions}/"
+        f"{len(unanswerable_questions)}"
+    )
+
+    print(
+        "Correct Refusals: "
+        f"{correct_refusals}/"
+        f"{evaluated_questions}"
+    )
+
+    print(
+        "Hallucination Resistance: "
+        f"{refusal_rate:.2%}"
+    )
 
 
 if __name__ == "__main__":
