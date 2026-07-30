@@ -1,5 +1,6 @@
 """FastAPI service for the Hybrid RAG application."""
 
+import logging
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -10,6 +11,8 @@ from api.schemas import AnswerResponse, QuestionRequest
 from src.rag_pipeline import RAGPipeline
 
 
+logger = logging.getLogger(__name__)
+
 rag_pipeline = RAGPipeline()
 
 
@@ -18,11 +21,11 @@ async def lifespan(app: FastAPI):
     """
     Initialize the RAG pipeline once when the API starts.
     """
-    print("Initializing RAG pipeline...")
+    logger.info("Initializing RAG pipeline...")
 
     rag_pipeline.initialize()
 
-    print("RAG API ready.")
+    logger.info("RAG API ready.")
 
     yield
 
@@ -77,6 +80,11 @@ def ask_question(
         ) from error
 
     except Exception as error:
+        logger.exception(
+            "Unexpected error while generating an answer: %s",
+            error,
+        )
+
         raise HTTPException(
             status_code=500,
             detail="Unable to generate an answer.",

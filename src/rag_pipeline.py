@@ -2,6 +2,7 @@
 
 from typing import Any
 
+from api.config import settings
 from src.bm25_retriever import build_bm25
 from src.citations import extract_citations
 from src.document_loader import load_documents
@@ -34,6 +35,9 @@ class RAGPipeline:
     and BM25 retrieval systems, reranks retrieved candidates,
     generates grounded answers using Gemini, and returns
     structured source citations.
+
+    Mock mode allows the complete retrieval pipeline to run
+    without making Gemini API requests.
     """
 
     def __init__(
@@ -69,7 +73,7 @@ class RAGPipeline:
     def initialize(self) -> None:
         """
         Load documents, models, retrieval indexes,
-        vector database, reranker, and Gemini client.
+        vector database, reranker, and optional Gemini client.
         """
         print("Loading enterprise documents...")
         raw_documents = load_documents(
@@ -108,8 +112,11 @@ class RAGPipeline:
         print("Loading CrossEncoder reranker...")
         self.reranker = load_reranker()
 
-        print("Creating Gemini client...")
-        self.client = create_client()
+        if settings.mock_mode:
+            print("Mock mode enabled. Skipping Gemini client.")
+        else:
+            print("Creating Gemini client...")
+            self.client = create_client()
 
         print("RAG pipeline initialized successfully.")
 
@@ -118,16 +125,23 @@ class RAGPipeline:
         Return whether all required RAG components
         have been initialized successfully.
         """
-        return all(
-            component is not None
-            for component in (
-                self.embedding_model,
-                self.reranker,
-                self.collection,
-                self.bm25,
-                self.client,
-            )
+        required_components = (
+            self.embedding_model,
+            self.reranker,
+            self.collection,
+            self.bm25,
         )
+
+        if not all(
+            component is not None
+            for component in required_components
+        ):
+            return False
+
+        if not settings.mock_mode and self.client is None:
+            return False
+
+        return True
 
     def retrieve(
         self,
@@ -187,7 +201,7 @@ class RAGPipeline:
             Dictionary containing the user question,
             generated answer, and structured citations.
         """
-        if self.client is None:
+        if not self.is_ready():
             raise RuntimeError(
                 "RAG pipeline has not been initialized."
             )
@@ -196,19 +210,25 @@ class RAGPipeline:
             question
         )
 
-        prompt = build_grounded_prompt(
-            question=question,
-            documents=retrieved_documents,
-        )
-
-        answer = generate_response(
-            client=self.client,
-            prompt=prompt,
-        )
-
         citations = extract_citations(
             retrieved_documents
         )
+
+        if settings.mock_mode:
+            answer = (
+                "Mock mode is enabled. Retrieval and reranking "
+                "completed successfully without calling Gemini."
+            )
+        else:
+            prompt = build_grounded_prompt(
+                question=question,
+                documents=retrieved_documents,
+            )
+
+            answer = generate_response(
+                client=self.client,
+                prompt=prompt,
+            )
 
         return {
             "question": question,

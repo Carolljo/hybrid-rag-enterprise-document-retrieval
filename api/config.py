@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     app_name: str = "Hybrid RAG Enterprise Document Retrieval API"
     app_version: str = "1.0.0"
     debug: bool = False
+    mock_mode: bool = False
 
     gemini_api_key: str
 
