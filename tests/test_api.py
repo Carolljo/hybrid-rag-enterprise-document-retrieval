@@ -54,7 +54,7 @@ def test_health_endpoint_not_ready(client: TestClient) -> None:
 
 
 def test_ask_endpoint(client: TestClient) -> None:
-    """Ask endpoint should return an answer and citations."""
+    """Ask endpoint should return an answer with verified citations."""
     mock_result = {
         "question": "What is the VPN policy?",
         "answer": "Employees must use the approved corporate VPN.",
@@ -62,8 +62,10 @@ def test_ask_endpoint(client: TestClient) -> None:
             {
                 "source": "it_security_policy.txt",
                 "chunk_id": 1,
+                "verified": True,
             }
         ],
+        "citation_confidence": 1.0,
     }
 
     with patch.object(
@@ -80,7 +82,6 @@ def test_ask_endpoint(client: TestClient) -> None:
 
     assert response.status_code == 200
     assert response.json() == mock_result
-
 
 def test_ask_endpoint_empty_question(client: TestClient) -> None:
     """Ask endpoint should reject an empty question."""
