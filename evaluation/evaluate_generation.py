@@ -1,5 +1,6 @@
 """Evaluate generation quality of the Hybrid RAG pipeline."""
 
+import argparse
 import json
 from pathlib import Path
 from typing import Any
@@ -28,6 +29,54 @@ def load_evaluation_questions() -> list[dict[str, Any]]:
         encoding="utf-8",
     ) as file:
         return json.load(file)
+
+
+def parse_arguments() -> argparse.Namespace:
+    """Parse optional question-range arguments."""
+    parser = argparse.ArgumentParser(
+        description="Evaluate Hybrid RAG generation quality."
+    )
+
+    parser.add_argument(
+        "--start",
+        type=int,
+        default=1,
+        help="First question ID to evaluate.",
+    )
+
+    parser.add_argument(
+        "--end",
+        type=int,
+        default=None,
+        help="Last question ID to evaluate.",
+    )
+
+    return parser.parse_args()
+
+
+def select_questions(
+    questions: list[dict[str, Any]],
+    start: int,
+    end: int | None,
+) -> list[dict[str, Any]]:
+    """Select evaluation questions by inclusive ID range."""
+    if start < 1:
+        raise ValueError("--start must be at least 1.")
+
+    if end is not None and end < start:
+        raise ValueError("--end must be greater than or equal to --start.")
+
+    return [
+        item
+        for item in questions
+        if (
+            item["id"] >= start
+            and (
+                end is None
+                or item["id"] <= end
+            )
+        )
+    ]
 
 
 def is_correct_refusal(answer: str) -> bool:
@@ -60,9 +109,14 @@ def calculate_answer_similarity(
     return round(similarity, 3)
 
 
-def evaluate_generation() -> None:
+def evaluate_generation(
+    questions: list[dict[str, Any]],
+) -> None:
     """Evaluate answer correctness and hallucination resistance."""
-    questions = load_evaluation_questions()
+    if not questions:
+        raise ValueError(
+            "No evaluation questions matched the requested range."
+        )
 
     pipeline = RAGPipeline()
     pipeline.initialize()
@@ -80,6 +134,11 @@ def evaluate_generation() -> None:
 
     print("\nGeneration Evaluation")
     print("=" * 70)
+
+    print(
+        "Question range: "
+        f"{questions[0]['id']}–{questions[-1]['id']}"
+    )
 
     for item in questions:
         question = item["question"]
@@ -182,8 +241,8 @@ def evaluate_generation() -> None:
                 or "UNAVAILABLE" in error_message
             ):
                 print(
-                    "\nGemini API is temporarily unavailable. "
-                    "Evaluation stopped."
+                    "\nGemini API is temporarily unavailable "
+                    "or quota-limited. Evaluation stopped."
                 )
                 break
 
@@ -216,17 +275,31 @@ def evaluate_generation() -> None:
         f"{answerable_count}"
     )
 
-    print(
-        "Answer Correctness Pass Rate: "
-        f"{correctness_rate:.2%}"
-    )
+    if answerable_count:
+        print(
+            "Answer Correctness Pass Rate: "
+            f"{correctness_rate:.2%}"
+        )
 
-    print(
-        "Average Semantic Similarity: "
-        f"{average_similarity:.3f}"
-    )
+        print(
+            "Average Semantic Similarity: "
+            f"{average_similarity:.3f}"
+        )
+    else:
+        print(
+            "Answer Correctness Pass Rate: "
+            "N/A"
+        )
+
+        print(
+            "Average Semantic Similarity: "
+            "N/A"
+        )
 
     print("\nResults by Question Type")
+
+    if not type_results:
+        print("- No answerable questions evaluated.")
 
     for question_type, values in type_results.items():
         count = int(values["count"])
@@ -257,16 +330,35 @@ def evaluate_generation() -> None:
         f"{refusal_count}"
     )
 
-    print(
-        "Correct Refusals: "
-        f"{refusal_passes}/{refusal_count}"
+    if refusal_count:
+        print(
+            "Correct Refusals: "
+            f"{refusal_passes}/{refusal_count}"
+        )
+
+        print(
+            "Hallucination Resistance: "
+            f"{refusal_rate:.2%}"
+        )
+    else:
+        print("Correct Refusals: N/A")
+        print("Hallucination Resistance: N/A")
+
+
+def main() -> None:
+    """Run generation evaluation for the requested range."""
+    args = parse_arguments()
+
+    questions = load_evaluation_questions()
+
+    selected_questions = select_questions(
+        questions=questions,
+        start=args.start,
+        end=args.end,
     )
 
-    print(
-        "Hallucination Resistance: "
-        f"{refusal_rate:.2%}"
-    )
+    evaluate_generation(selected_questions)
 
 
 if __name__ == "__main__":
-    evaluate_generation()
+    main()
