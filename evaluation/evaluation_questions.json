@@ -1,109 +1,574 @@
 [
   {
     "id": 1,
+    "type": "direct",
     "question": "What is the VPN policy for remote access?",
     "expected_sources": [
       "remote_work_policy.txt",
       "password_access_policy.txt"
     ],
+    "expected_answer": "Remote access to restricted internal systems must use the company-approved VPN, with required authentication such as MFA where supported. VPN credentials, tokens, and passwords must not be shared.",
     "answerable": true
   },
   {
     "id": 2,
+    "type": "direct",
     "question": "What should an employee do if their password or authentication credential is compromised?",
     "expected_sources": [
       "password_access_policy.txt",
       "incident_response_policy.txt"
     ],
+    "expected_answer": "The employee must report the suspected credential compromise immediately and change or revoke the affected credential as directed by the IT security team.",
     "answerable": true
   },
   {
     "id": 3,
+    "type": "direct",
     "question": "What are the requirements for handling restricted information?",
     "expected_sources": [
       "data_classification_policy.txt"
     ],
+    "expected_answer": "Restricted information requires the highest protection, least-privilege access, approved secure storage and transmission, VPN and required authentication for remote access, and must not be stored on personal or unmanaged devices.",
     "answerable": true
   },
   {
     "id": 4,
+    "type": "direct",
     "question": "What should employees do if a company laptop is lost or stolen?",
     "expected_sources": [
       "incident_response_policy.txt",
       "acceptable_use_policy.txt",
       "remote_work_policy.txt"
     ],
+    "expected_answer": "A lost or stolen company laptop must be reported immediately to the appropriate IT security team. Employees should not attempt to recover a stolen device remotely unless instructed by authorized personnel.",
     "answerable": true
   },
   {
     "id": 5,
+    "type": "direct",
     "question": "Can employees disable endpoint-security software?",
     "expected_sources": [
       "it_security_policy.txt",
       "acceptable_use_policy.txt",
       "remote_work_policy.txt"
     ],
+    "expected_answer": "No. Employees must not disable or bypass approved endpoint-security, antivirus, device-management, or related security controls while using company systems.",
     "answerable": true
   },
   {
     "id": 6,
+    "type": "direct",
     "question": "How should employees request planned annual leave?",
     "expected_sources": [
-      "leave_policy.txt"
+      "leave_policy.txt",
+      "employee_handbook.txt"
     ],
+    "expected_answer": "Planned annual leave should be requested in advance through the approved leave-management system or employee portal and requires manager approval. The handbook says requests should normally be submitted at least seven days in advance.",
     "answerable": true
   },
   {
     "id": 7,
+    "type": "direct",
     "question": "What documentation is required when submitting a business expense?",
     "expected_sources": [
       "expense_reimbursement_policy.txt"
     ],
+    "expected_answer": "Employees should provide required receipts or supporting documentation and clearly identify the business purpose, date, amount, and relevant project or activity.",
     "answerable": true
   },
   {
     "id": 8,
+    "type": "multi_document",
     "question": "Can employees share passwords during a work handover?",
     "expected_sources": [
       "leave_policy.txt",
       "password_access_policy.txt"
     ],
+    "expected_answer": "No. Passwords and access credentials must never be shared as part of a work handover. Employees should communicate responsibilities and outstanding work without sharing credentials.",
     "answerable": true
   },
   {
     "id": 9,
+    "type": "direct",
     "question": "What should employees do when they receive an unexpected MFA request?",
     "expected_sources": [
       "password_access_policy.txt",
-      "incident_response_policy.txt"
+      "incident_response_policy.txt",
+      "it_security_policy.txt"
     ],
+    "expected_answer": "The unexpected MFA request should be denied and reported immediately to the IT security or Security Operations team because it may indicate attempted unauthorized access.",
     "answerable": true
   },
   {
     "id": 10,
+    "type": "direct",
     "question": "Can confidential company information be uploaded to a personal cloud storage account?",
     "expected_sources": [
       "data_classification_policy.txt",
       "acceptable_use_policy.txt"
     ],
+    "expected_answer": "No. Confidential or restricted company information must not be uploaded to personal cloud storage or other unauthorized external services.",
     "answerable": true
   },
   {
     "id": 11,
-    "question": "What is the company's annual revenue?",
-    "expected_sources": [],
-    "answerable": false
+    "type": "direct",
+    "question": "How many days of paid annual leave do full-time employees receive?",
+    "expected_sources": [
+      "employee_handbook.txt"
+    ],
+    "expected_answer": "Full-time employees receive 20 days of paid annual leave per calendar year.",
+    "answerable": true
   },
   {
     "id": 12,
-    "question": "Who is the CEO of the company?",
-    "expected_sources": [],
-    "answerable": false
+    "type": "direct",
+    "question": "How many unused annual leave days may be carried forward?",
+    "expected_sources": [
+      "employee_handbook.txt"
+    ],
+    "expected_answer": "Up to five unused annual leave days may be carried forward to the following calendar year.",
+    "answerable": true
   },
   {
     "id": 13,
+    "type": "direct",
+    "question": "What are the company's standard working hours?",
+    "expected_sources": [
+      "employee_handbook.txt"
+    ],
+    "expected_answer": "Standard working hours are Monday through Friday from 9:00 AM to 5:30 PM, with 40 working hours expected per week.",
+    "answerable": true
+  },
+  {
+    "id": 14,
+    "type": "direct",
+    "question": "How many days per week may employees work remotely?",
+    "expected_sources": [
+      "employee_handbook.txt"
+    ],
+    "expected_answer": "Employees may work remotely for up to three days per week with manager approval.",
+    "answerable": true
+  },
+  {
+    "id": 15,
+    "type": "direct",
+    "question": "How much professional development funding may a full-time employee receive per year?",
+    "expected_sources": [
+      "employee_handbook.txt"
+    ],
+    "expected_answer": "A full-time employee may receive up to $1,500 per calendar year for approved professional development activities.",
+    "answerable": true
+  },
+  {
+    "id": 16,
+    "type": "direct",
+    "question": "What are the four company information classification levels?",
+    "expected_sources": [
+      "data_classification_policy.txt",
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "The four classification levels are Public, Internal, Confidential, and Restricted.",
+    "answerable": true
+  },
+  {
+    "id": 17,
+    "type": "direct",
+    "question": "What should an employee do when the classification of information is unclear?",
+    "expected_sources": [
+      "data_classification_policy.txt"
+    ],
+    "expected_answer": "The employee should consult the information owner or IT security team before sharing the information.",
+    "answerable": true
+  },
+  {
+    "id": 18,
+    "type": "direct",
+    "question": "Can restricted information be stored on a personal device?",
+    "expected_sources": [
+      "data_classification_policy.txt",
+      "remote_work_policy.txt"
+    ],
+    "expected_answer": "No. Restricted information must not be stored or downloaded onto personal or unmanaged devices.",
+    "answerable": true
+  },
+  {
+    "id": 19,
+    "type": "direct",
+    "question": "What information should an employee provide when reporting a security incident?",
+    "expected_sources": [
+      "incident_response_policy.txt"
+    ],
+    "expected_answer": "The employee should provide relevant details such as the affected system, approximate time, observed activity, and any actions already taken.",
+    "answerable": true
+  },
+  {
+    "id": 20,
+    "type": "direct",
+    "question": "What should an employee do if they suspect malware on a company device?",
+    "expected_sources": [
+      "incident_response_policy.txt"
+    ],
+    "expected_answer": "When safe, the employee should disconnect the affected device from company networks and contact the IT security team. They should not disable security tools or attempt to remove sophisticated malware without authorization.",
+    "answerable": true
+  },
+  {
+    "id": 21,
+    "type": "direct",
+    "question": "Who coordinates security incident investigation, containment, remediation, and recovery?",
+    "expected_sources": [
+      "incident_response_policy.txt"
+    ],
+    "expected_answer": "The IT security team coordinates investigation, containment, remediation, and recovery activities.",
+    "answerable": true
+  },
+  {
+    "id": 22,
+    "type": "direct",
+    "question": "Within what time must suspected security incidents be reported under the Information Security Policy?",
+    "expected_sources": [
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "Suspected security incidents must be reported to the Security Operations team within one hour of discovery.",
+    "answerable": true
+  },
+  {
+    "id": 23,
+    "type": "direct",
+    "question": "What is the internal incident reference for suspected account compromise?",
+    "expected_sources": [
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "The internal incident reference for suspected account compromise is SEC-401.",
+    "answerable": true
+  },
+  {
+    "id": 24,
+    "type": "direct",
+    "question": "What is the minimum corporate password length?",
+    "expected_sources": [
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "Corporate account passwords must contain at least 14 characters.",
+    "answerable": true
+  },
+  {
+    "id": 25,
+    "type": "direct",
+    "question": "Where should development credentials and API keys be stored?",
+    "expected_sources": [
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "Development credentials and API keys should be stored using approved environment-variable or secrets-management mechanisms and must never be committed to source-code repositories.",
+    "answerable": true
+  },
+  {
+    "id": 26,
+    "type": "direct",
+    "question": "Can employees install unauthorized software on company-managed devices?",
+    "expected_sources": [
+      "acceptable_use_policy.txt"
+    ],
+    "expected_answer": "No. Employees must not install unauthorized software; required business software should come through approved company processes or authorized repositories.",
+    "answerable": true
+  },
+  {
+    "id": 27,
+    "type": "direct",
+    "question": "Are employees allowed limited personal use of company technology?",
+    "expected_sources": [
+      "acceptable_use_policy.txt"
+    ],
+    "expected_answer": "Limited personal use may be permitted when it does not interfere with work responsibilities, create security risks, or violate company policies.",
+    "answerable": true
+  },
+  {
+    "id": 28,
+    "type": "direct",
+    "question": "Are personal meals reimbursable?",
+    "expected_sources": [
+      "expense_reimbursement_policy.txt"
+    ],
+    "expected_answer": "Personal meals unrelated to approved business activities are not reimbursable.",
+    "answerable": true
+  },
+  {
+    "id": 29,
+    "type": "direct",
+    "question": "What should happen if a company payment card is lost or stolen?",
+    "expected_sources": [
+      "expense_reimbursement_policy.txt"
+    ],
+    "expected_answer": "Loss, theft, or suspected unauthorized use of a company payment card must be reported promptly.",
+    "answerable": true
+  },
+  {
+    "id": 30,
+    "type": "direct",
+    "question": "Does submitting a leave request mean the leave is automatically approved?",
+    "expected_sources": [
+      "leave_policy.txt"
+    ],
+    "expected_answer": "No. Submission does not automatically mean approval; employees should confirm approval through the approved leave-management process before beginning planned leave.",
+    "answerable": true
+  },
+  {
+    "id": 31,
+    "type": "direct",
+    "question": "What does error code ERR-401 mean and what should the user do?",
+    "expected_sources": [
+      "product_support_guide.txt"
+    ],
+    "expected_answer": "ERR-401 means the user's authentication credentials are invalid or expired. The user should sign in again and verify the correct account; if the issue continues after authentication is refreshed, it should be escalated to Level 1 support.",
+    "answerable": true
+  },
+  {
+    "id": 32,
+    "type": "direct",
+    "question": "What does ERR-504 mean and when should it be escalated?",
+    "expected_sources": [
+      "product_support_guide.txt"
+    ],
+    "expected_answer": "ERR-504 means an upstream service did not respond within the configured timeout. The user should retry after 60 seconds, and if it occurs three or more times within 15 minutes, escalate to Level 2 support.",
+    "answerable": true
+  },
+  {
+    "id": 33,
+    "type": "direct",
+    "question": "What should happen when ERR-DB-17 occurs?",
+    "expected_sources": [
+      "product_support_guide.txt"
+    ],
+    "expected_answer": "ERR-DB-17 means the application cannot connect to the primary database. Users should not repeatedly restart the application; the incident must be escalated immediately to Level 2, which should verify database availability and connectivity before any Level 3 escalation.",
+    "answerable": true
+  },
+  {
+    "id": 34,
+    "type": "direct",
+    "question": "What is the production service availability target?",
+    "expected_sources": [
+      "product_support_guide.txt"
+    ],
+    "expected_answer": "The production service has a target monthly availability of 99.9%, excluding scheduled maintenance windows.",
+    "answerable": true
+  },
+  {
+    "id": 35,
+    "type": "direct",
+    "question": "What are the initial response targets for critical, high-priority, and normal-priority support requests?",
+    "expected_sources": [
+      "product_support_guide.txt"
+    ],
+    "expected_answer": "Critical incidents have a 15-minute initial response target, high-priority incidents one hour, and normal-priority requests eight business hours.",
+    "answerable": true
+  },
+  {
+    "id": 36,
+    "type": "multi_document",
+    "question": "An employee working remotely on public Wi-Fi needs to access restricted information. What security requirements apply?",
+    "expected_sources": [
+      "remote_work_policy.txt",
+      "data_classification_policy.txt",
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "The employee should avoid unsecured public Wi-Fi where possible and must use the approved corporate VPN before accessing restricted internal systems. Required authentication such as MFA applies, restricted information must remain on approved managed devices, and endpoint security must remain enabled.",
+    "answerable": true
+  },
+  {
+    "id": 37,
+    "type": "multi_document",
+    "question": "What should happen after a company device containing sensitive information is stolen?",
+    "expected_sources": [
+      "incident_response_policy.txt",
+      "it_security_policy.txt",
+      "acceptable_use_policy.txt"
+    ],
+    "expected_answer": "The theft must be reported immediately to the appropriate security team and, under the Information Security Policy, to the employee's manager as well. The employee should not attempt unauthorized recovery; the security team may remotely lock or erase a managed device as needed.",
+    "answerable": true
+  },
+  {
+    "id": 38,
+    "type": "multi_document",
+    "question": "How do the policies protect company credentials during remote work?",
+    "expected_sources": [
+      "remote_work_policy.txt",
+      "password_access_policy.txt",
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "Credentials must not be shared, MFA must be used where required or supported, remote access to restricted systems must use the approved VPN, suspicious authentication requests must be reported, and credentials must be stored only through approved secure mechanisms.",
+    "answerable": true
+  },
+  {
+    "id": 39,
+    "type": "multi_document",
+    "question": "What should an employee do after accidentally exposing restricted information while working remotely?",
+    "expected_sources": [
+      "remote_work_policy.txt",
+      "data_classification_policy.txt",
+      "incident_response_policy.txt"
+    ],
+    "expected_answer": "The employee should report the exposure promptly to the IT security team and provide relevant details about what was exposed, how it occurred, and who may have received or accessed it.",
+    "answerable": true
+  },
+  {
+    "id": 40,
+    "type": "multi_document",
+    "question": "What security rules apply to passwords, MFA codes, and authentication tokens?",
+    "expected_sources": [
+      "password_access_policy.txt",
+      "acceptable_use_policy.txt",
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "Passwords, MFA codes, authentication tokens, recovery codes, and similar credentials must be protected and not shared. Passwords should be strong and unique, suspicious authentication activity must be reported, and credentials must not be stored in unapproved or insecure locations.",
+    "answerable": true
+  },
+  {
+    "id": 41,
+    "type": "multi_document",
+    "question": "How should confidential information be stored and transmitted?",
+    "expected_sources": [
+      "data_classification_policy.txt",
+      "acceptable_use_policy.txt"
+    ],
+    "expected_answer": "Confidential information should be stored only in approved company systems and transmitted through approved secure communication or file-transfer channels. It must not be sent through personal email, personal cloud storage, or unauthorized applications.",
+    "answerable": true
+  },
+  {
+    "id": 42,
+    "type": "multi_document",
+    "question": "What should an employee do before taking planned leave, and what must they not share during handover?",
+    "expected_sources": [
+      "leave_policy.txt",
+      "password_access_policy.txt"
+    ],
+    "expected_answer": "The employee should communicate important deadlines, responsibilities, and outstanding work to the manager or designated colleague, but must never share passwords or access credentials during the handover.",
+    "answerable": true
+  },
+  {
+    "id": 43,
+    "type": "multi_document",
+    "question": "What requirements apply when an employee works remotely with confidential or restricted information?",
+    "expected_sources": [
+      "remote_work_policy.txt",
+      "data_classification_policy.txt",
+      "employee_handbook.txt"
+    ],
+    "expected_answer": "The employee must follow company security requirements, use the approved VPN for restricted internal access, use approved managed devices and communication systems, prevent unauthorized viewing, and avoid storing restricted information on personal or unmanaged devices.",
+    "answerable": true
+  },
+  {
+    "id": 44,
+    "type": "multi_document",
+    "question": "How should suspicious login activity and unexpected authentication requests be handled?",
+    "expected_sources": [
+      "password_access_policy.txt",
+      "incident_response_policy.txt",
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "Suspicious login activity and unexpected authentication or MFA requests should be denied where applicable and reported promptly or immediately to the IT security team because they may indicate unauthorized access or credential compromise.",
+    "answerable": true
+  },
+  {
+    "id": 45,
+    "type": "multi_document",
+    "question": "Can an employee use a personal laptop to access restricted company information from home?",
+    "expected_sources": [
+      "remote_work_policy.txt",
+      "data_classification_policy.txt",
+      "it_security_policy.txt"
+    ],
+    "expected_answer": "Restricted information must not be stored on personal or unmanaged devices, and remote work normally requires a company-managed device unless another device has explicit approval. Restricted internal access must also use the approved VPN and required authentication controls.",
+    "answerable": true
+  },
+  {
+    "id": 46,
+    "type": "ambiguous",
+    "question": "Can I use my computer for work?",
+    "expected_sources": [
+      "remote_work_policy.txt"
+    ],
+    "expected_answer": "The policy does not give an unconditional yes. Remote work must normally use a company-managed device unless explicit approval has been granted for another device.",
+    "answerable": true
+  },
+  {
+    "id": 47,
+    "type": "ambiguous",
+    "question": "Can I share this file externally?",
+    "expected_sources": [
+      "data_classification_policy.txt"
+    ],
+    "expected_answer": "It depends on the information classification and authorization. Public information may be shared externally after approval, while internal, confidential, and restricted information have tighter sharing requirements. If classification is unclear, consult the information owner or IT security team.",
+    "answerable": true
+  },
+  {
+    "id": 48,
+    "type": "ambiguous",
+    "question": "Can I take time off next week?",
+    "expected_sources": [
+      "leave_policy.txt",
+      "employee_handbook.txt"
+    ],
+    "expected_answer": "The documents do not guarantee approval for a particular week. Planned annual leave should normally be requested in advance through the approved system and is subject to manager approval and operational requirements.",
+    "answerable": true
+  },
+  {
+    "id": 49,
+    "type": "ambiguous",
+    "question": "Will my expense be reimbursed?",
+    "expected_sources": [
+      "expense_reimbursement_policy.txt"
+    ],
+    "expected_answer": "That depends on whether the expense is reasonable, necessary, incurred for authorized company business, properly documented, and compliant with approval and reimbursement requirements. Personal expenses are not eligible.",
+    "answerable": true
+  },
+  {
+    "id": 50,
+    "type": "ambiguous",
+    "question": "Should this support issue be escalated?",
+    "expected_sources": [
+      "product_support_guide.txt"
+    ],
+    "expected_answer": "The answer depends on the error and troubleshooting already performed. Issues should generally be escalated after the relevant troubleshooting steps unless the guide explicitly requires immediate escalation, such as ERR-DB-17.",
+    "answerable": true
+  },
+  {
+    "id": 51,
+    "type": "unanswerable",
+    "question": "What is the company's annual revenue?",
+    "expected_sources": [],
+    "expected_answer": "I cannot determine the answer from the provided documents.",
+    "answerable": false
+  },
+  {
+    "id": 52,
+    "type": "unanswerable",
+    "question": "Who is the CEO of the company?",
+    "expected_sources": [],
+    "expected_answer": "I cannot determine the answer from the provided documents.",
+    "answerable": false
+  },
+  {
+    "id": 53,
+    "type": "unanswerable",
     "question": "What is the company's current stock price?",
     "expected_sources": [],
+    "expected_answer": "I cannot determine the answer from the provided documents.",
+    "answerable": false
+  },
+  {
+    "id": 54,
+    "type": "unanswerable",
+    "question": "Where is the company's headquarters located?",
+    "expected_sources": [],
+    "expected_answer": "I cannot determine the answer from the provided documents.",
+    "answerable": false
+  },
+  {
+    "id": 55,
+    "type": "unanswerable",
+    "question": "How many customers does Northstar Technologies have?",
+    "expected_sources": [],
+    "expected_answer": "I cannot determine the answer from the provided documents.",
     "answerable": false
   }
 ]

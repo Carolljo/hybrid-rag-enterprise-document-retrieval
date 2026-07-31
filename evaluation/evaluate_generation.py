@@ -1,9 +1,12 @@
-"""Evaluate hallucination resistance on unanswerable questions."""
+"""Evaluate generation quality of the Hybrid RAG pipeline."""
 
 import json
 from pathlib import Path
 from typing import Any
 
+from sentence_transformers import util
+
+from src.embeddings import load_embedding_model
 from src.rag_pipeline import RAGPipeline
 
 
@@ -14,6 +17,8 @@ EVALUATION_FILE = Path(
 EXPECTED_REFUSAL = (
     "I cannot determine the answer from the provided documents."
 )
+
+SIMILARITY_THRESHOLD = 0.70
 
 
 def load_evaluation_questions() -> list[dict[str, Any]]:
@@ -26,70 +31,140 @@ def load_evaluation_questions() -> list[dict[str, Any]]:
 
 
 def is_correct_refusal(answer: str) -> bool:
-    """
-    Check whether the generated answer correctly refuses
-    an unsupported question.
-
-    Args:
-        answer:
-            Generated answer returned by the RAG pipeline.
-
-    Returns:
-        True when the expected refusal statement is present.
-    """
+    """Check whether an unsupported question was refused."""
     return EXPECTED_REFUSAL.lower() in answer.lower()
 
 
-def evaluate_generation() -> None:
-    """Evaluate hallucination resistance on unanswerable questions."""
-    questions = load_evaluation_questions()
+def calculate_answer_similarity(
+    generated_answer: str,
+    expected_answer: str,
+    model: Any,
+) -> float:
+    """
+    Calculate semantic similarity between generated
+    and golden reference answers.
+    """
+    embeddings = model.encode(
+        [
+            generated_answer,
+            expected_answer,
+        ],
+        convert_to_tensor=True,
+    )
 
-    unanswerable_questions = [
-        item
-        for item in questions
-        if not item["answerable"]
-    ]
+    similarity = util.cos_sim(
+        embeddings[0],
+        embeddings[1],
+    ).item()
+
+    return round(similarity, 3)
+
+
+def evaluate_generation() -> None:
+    """Evaluate answer correctness and hallucination resistance."""
+    questions = load_evaluation_questions()
 
     pipeline = RAGPipeline()
     pipeline.initialize()
 
-    correct_refusals = 0
-    evaluated_questions = 0
+    evaluation_model = load_embedding_model()
 
-    print("\nUnanswerable Question Evaluation")
+    answerable_count = 0
+    answerable_passes = 0
+    similarity_total = 0.0
+
+    refusal_count = 0
+    refusal_passes = 0
+
+    type_results: dict[str, dict[str, float]] = {}
+
+    print("\nGeneration Evaluation")
     print("=" * 70)
 
-    for item in unanswerable_questions:
+    for item in questions:
         question = item["question"]
+        question_type = item["type"]
 
         print(
-            f"\nQuestion {item['id']}: "
+            f"\nQuestion {item['id']} "
+            f"[{question_type}]: "
             f"{question}"
         )
-        print("Expected: UNANSWERABLE")
 
         try:
             result = pipeline.answer(question)
-
             answer = result["answer"]
-            passed = is_correct_refusal(answer)
 
-            evaluated_questions += 1
-
-            if passed:
-                correct_refusals += 1
-
-            print("\nAnswer:")
+            print("\nGenerated Answer:")
             print(answer)
 
-            print(
-                "\nResult:",
-                "PASS" if passed else "FAIL",
-            )
+            if item["answerable"]:
+                expected_answer = item["expected_answer"]
+
+                similarity = calculate_answer_similarity(
+                    generated_answer=answer,
+                    expected_answer=expected_answer,
+                    model=evaluation_model,
+                )
+
+                passed = (
+                    similarity >= SIMILARITY_THRESHOLD
+                )
+
+                answerable_count += 1
+                similarity_total += similarity
+
+                if passed:
+                    answerable_passes += 1
+
+                if question_type not in type_results:
+                    type_results[question_type] = {
+                        "count": 0,
+                        "passes": 0,
+                        "similarity": 0.0,
+                    }
+
+                type_results[question_type]["count"] += 1
+                type_results[question_type][
+                    "similarity"
+                ] += similarity
+
+                if passed:
+                    type_results[question_type][
+                        "passes"
+                    ] += 1
+
+                print("\nExpected Answer:")
+                print(expected_answer)
+
+                print(
+                    f"\nSemantic Similarity: "
+                    f"{similarity:.3f}"
+                )
+
+                print(
+                    "Result:",
+                    "PASS" if passed else "FAIL",
+                )
+
+            else:
+                passed = is_correct_refusal(answer)
+
+                refusal_count += 1
+
+                if passed:
+                    refusal_passes += 1
+
+                print("\nExpected: UNANSWERABLE")
+
+                print(
+                    "Result:",
+                    "PASS" if passed else "FAIL",
+                )
 
             print(
                 "Citation Confidence:",
-                result["citation_confidence"],
+                f"{result['citation_confidence']:.1%}",
             )
 
         except Exception as error:
@@ -114,9 +189,21 @@ def evaluate_generation() -> None:
 
         print("-" * 70)
 
+    average_similarity = (
+        similarity_total / answerable_count
+        if answerable_count
+        else 0.0
+    )
+
+    correctness_rate = (
+        answerable_passes / answerable_count
+        if answerable_count
+        else 0.0
+    )
+
     refusal_rate = (
-        correct_refusals / evaluated_questions
-        if evaluated_questions
+        refusal_passes / refusal_count
+        if refusal_count
         else 0.0
     )
 
@@ -125,15 +212,54 @@ def evaluate_generation() -> None:
     print("=" * 70)
 
     print(
-        "Unanswerable Questions Evaluated: "
-        f"{evaluated_questions}/"
-        f"{len(unanswerable_questions)}"
+        "Answerable Questions Evaluated: "
+        f"{answerable_count}"
+    )
+
+    print(
+        "Answer Correctness Pass Rate: "
+        f"{correctness_rate:.2%}"
+    )
+
+    print(
+        "Average Semantic Similarity: "
+        f"{average_similarity:.3f}"
+    )
+
+    print("\nResults by Question Type")
+
+    for question_type, values in type_results.items():
+        count = int(values["count"])
+        passes = int(values["passes"])
+
+        pass_rate = (
+            passes / count
+            if count
+            else 0.0
+        )
+
+        average_type_similarity = (
+            values["similarity"] / count
+            if count
+            else 0.0
+        )
+
+        print(
+            f"- {question_type}: "
+            f"{passes}/{count} passed "
+            f"({pass_rate:.2%}), "
+            f"average similarity "
+            f"{average_type_similarity:.3f}"
+        )
+
+    print(
+        "\nUnanswerable Questions Evaluated: "
+        f"{refusal_count}"
     )
 
     print(
         "Correct Refusals: "
-        f"{correct_refusals}/"
-        f"{evaluated_questions}"
+        f"{refusal_passes}/{refusal_count}"
     )
 
     print(
