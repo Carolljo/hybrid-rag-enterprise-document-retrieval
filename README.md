@@ -2,15 +2,15 @@
 
 A production-oriented Retrieval-Augmented Generation (RAG) system for grounded question answering over enterprise documents.
 
-The system combines dense semantic retrieval, BM25 keyword search, Reciprocal Rank Fusion (RRF), CrossEncoder reranking, and Gemini-based answer generation to retrieve relevant enterprise information and generate answers grounded in source documents.
+The system combines dense semantic retrieval, BM25 keyword search, Reciprocal Rank Fusion (RRF), CrossEncoder reranking, Gemini-based answer generation, citation verification, REST API access, a Streamlit frontend, automated evaluation, and Docker containerization.
 
 ---
 
 ## Project Overview
 
-Enterprise information is often distributed across multiple documents such as security policies, employee handbooks, remote-work policies, incident-response procedures, and operational guides.
+Enterprise information is often distributed across multiple documents such as security policies, employee handbooks, remote-work policies, incident-response procedures, leave policies, and operational guides.
 
-Traditional keyword search can fail when a user's wording differs from the terminology used in the documents. Pure semantic search can also miss exact terms, policy names, or security-related keywords.
+Traditional keyword search can fail when a user's wording differs from the terminology used in the documents. Pure semantic search can also miss exact terms, policy names, acronyms, or security-related keywords.
 
 This project implements a Hybrid RAG architecture that combines:
 
@@ -19,9 +19,15 @@ This project implements a Hybrid RAG architecture that combines:
 - Reciprocal Rank Fusion
 - CrossEncoder reranking
 - Grounded LLM generation
-- Source citations
+- Citation extraction and verification
 - FastAPI REST API
-- Retrieval and hallucination-resistance evaluation
+- Streamlit frontend
+- Retrieval evaluation
+- Golden-answer generation evaluation
+- Hallucination-resistance evaluation
+- Chunking strategy evaluation
+- Automated API testing
+- Docker containerization
 
 ---
 
@@ -31,11 +37,16 @@ The goal is to build a question-answering system that can:
 
 1. Retrieve relevant information from multiple enterprise documents.
 2. Handle both semantic and keyword-based queries.
-3. Rerank retrieved results for better relevance.
-4. Generate answers using only retrieved evidence.
-5. Return source citations with generated answers.
-6. Reduce hallucinations when the requested information is not present.
-7. Expose the complete pipeline through a REST API.
+3. Combine multiple retrieval strategies.
+4. Rerank retrieved results for better relevance.
+5. Generate answers using retrieved evidence.
+6. Return source citations with generated answers.
+7. Verify citation provenance against retrieved chunks.
+8. Reduce hallucinations when requested information is not present.
+9. Expose the pipeline through a REST API.
+10. Provide a simple user-facing web interface.
+11. Evaluate retrieval and generation quality systematically.
+12. Run reproducibly using Docker containers.
 
 ---
 
@@ -76,10 +87,13 @@ Vector Store                   |
           Gemini LLM Generation
                     |
                     v
-         Grounded Answer + Citations
+      Citation Extraction + Verification
                     |
                     v
-                FastAPI
+               FastAPI API
+                    |
+                    v
+           Streamlit Frontend
 ```
 
 ---
@@ -92,53 +106,81 @@ Enterprise documents are loaded from the local document collection while preserv
 
 ### 2. Text Chunking
 
-Documents are divided into smaller chunks suitable for retrieval and LLM context construction.
+Documents are divided into overlapping character-based chunks suitable for retrieval and LLM context construction.
+
+The production configuration currently uses:
+
+```text
+Chunk size: 800 characters
+Chunk overlap: 150 characters
+```
+
+Alternative chunk configurations were benchmarked separately during evaluation.
 
 ### 3. Dense Retrieval
 
 Sentence-transformer embeddings represent document chunks and user queries as dense vectors.
 
-A vector database is used to retrieve semantically similar chunks.
+ChromaDB is used as the vector store for semantic retrieval.
 
 ### 4. BM25 Retrieval
 
 BM25 provides lexical retrieval based on exact words and term frequency.
 
-This is useful for enterprise queries containing:
+This is particularly useful for enterprise queries containing:
 
-- policy names
-- technical terminology
-- acronyms
-- security terms
-- exact phrases
+- Policy names
+- Technical terminology
+- Acronyms
+- Security terms
+- Exact phrases
 
 ### 5. Hybrid Retrieval
 
 Dense and BM25 retrieval results are combined using Reciprocal Rank Fusion (RRF).
 
-This allows the system to benefit from both semantic similarity and keyword matching.
+This allows the system to benefit from both semantic similarity and lexical matching.
 
 ### 6. CrossEncoder Reranking
 
-The fused candidates are reranked using a CrossEncoder model.
+The fused retrieval candidates are reranked using a CrossEncoder model.
 
-Unlike the initial retrieval stage, the CrossEncoder evaluates the query and candidate document together, providing a more precise relevance score.
+Unlike the initial retrieval stage, the CrossEncoder evaluates the query and candidate text together, providing a stronger relevance signal.
 
 ### 7. Grounded Generation
 
 The highest-ranked context is passed to Gemini with instructions to answer using the retrieved evidence.
 
-The generation layer is designed to avoid inventing unsupported information when the documents do not contain an answer.
+The generation layer is designed to refuse unsupported questions rather than relying on outside knowledge.
 
-### 8. Citations
+### 8. Citation Verification
 
-Generated responses include citations identifying the enterprise documents and chunks used as supporting evidence.
+Retrieved source metadata is converted into structured citations.
+
+Returned citations are checked against the retrieved document chunks to verify their provenance.
+
+Citation confidence represents the proportion of returned citations that can be verified against the retrieved context.
+
+It does **not** represent the probability that the generated answer itself is factually correct.
+
+### 9. API Layer
+
+FastAPI exposes the complete RAG pipeline through HTTP endpoints.
+
+### 10. Frontend
+
+A Streamlit frontend communicates with the FastAPI service and provides an interactive interface for asking questions and viewing:
+
+- Generated answers
+- Source documents
+- Citation verification status
+- Citation confidence
 
 ---
 
 ## Enterprise Document Collection
 
-The sample knowledge base contains enterprise documents covering areas such as:
+The sample knowledge base contains 10 enterprise documents covering:
 
 - Acceptable use
 - Data classification
@@ -151,7 +193,7 @@ The sample knowledge base contains enterprise documents covering areas such as:
 - Product support
 - Remote work
 
-These documents provide overlapping information, making them useful for evaluating multi-document retrieval.
+The documents intentionally contain overlapping information, allowing multi-document retrieval behavior to be evaluated.
 
 ---
 
@@ -173,6 +215,12 @@ hybrid-rag-enterprise-document-retrieval/
 |   |-- evaluation_questions.json
 |   |-- evaluate_retrieval.py
 |   |-- evaluate_generation.py
+|   |-- evaluate_chunking.py
+|   |-- results.md
+|
+|-- frontend/
+|   |-- app.py
+|   |-- Dockerfile
 |
 |-- src/
 |   |-- document_loader.py
@@ -190,8 +238,11 @@ hybrid-rag-enterprise-document-retrieval/
 |-- tests/
 |   |-- test_api.py
 |
+|-- .dockerignore
 |-- .env.example
 |-- .gitignore
+|-- docker-compose.yml
+|-- Dockerfile
 |-- requirements.txt
 |-- README.md
 ```
@@ -203,26 +254,30 @@ hybrid-rag-enterprise-document-retrieval/
 - Python 3.11
 - FastAPI
 - Uvicorn
+- Streamlit
 - Google Gemini API
 - Sentence Transformers
 - CrossEncoder
+- PyTorch
 - ChromaDB
 - BM25
 - Pydantic Settings
 - Pytest
+- Docker
+- Docker Compose
 
 ---
 
 ## Installation
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone <repository-url>
 cd hybrid-rag-enterprise-document-retrieval
 ```
 
-### 2. Create a virtual environment
+### 2. Create a Virtual Environment
 
 Windows:
 
@@ -238,7 +293,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -250,19 +305,42 @@ pip install -r requirements.txt
 
 Create a `.env` file in the project root.
 
-You can use `.env.example` as the template:
+Use `.env.example` as the template.
+
+Example:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
+RAG_MOCK_MODE=false
 ```
 
-Replace the placeholder with a valid Gemini API key.
+### Gemini API Key
 
-The real `.env` file is excluded from Git to prevent API keys from being committed.
+`GEMINI_API_KEY` contains the Gemini API credential used for real answer generation.
+
+The real `.env` file is excluded from Git.
+
+### Mock Mode
+
+The application supports a mock mode:
+
+```env
+RAG_MOCK_MODE=true
+```
+
+When mock mode is enabled, retrieval, reranking, citation extraction, and citation verification can run without making Gemini API requests.
+
+For real end-to-end generation:
+
+```env
+RAG_MOCK_MODE=false
+```
+
+Mock mode is useful for development, API testing, and avoiding unnecessary external API usage.
 
 ---
 
-## Running the API
+## Running the API Locally
 
 Start the FastAPI application:
 
@@ -270,9 +348,18 @@ Start the FastAPI application:
 uvicorn api.main:app --reload
 ```
 
-During startup, the application initializes the RAG pipeline, including document loading, chunking, embeddings, retrieval indexes, reranking, and the Gemini client.
+During startup, the application initializes:
 
-Once the server is running, FastAPI's interactive API documentation is available at:
+- Document loading
+- Text chunking
+- Embedding model
+- Document embeddings
+- ChromaDB collection
+- BM25 index
+- CrossEncoder reranker
+- Gemini client when mock mode is disabled
+
+FastAPI interactive documentation is available at:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -313,7 +400,63 @@ Example request:
 }
 ```
 
-The endpoint processes the question through the complete Hybrid RAG pipeline and returns a grounded answer together with supporting citations.
+The endpoint processes the question through the complete Hybrid RAG pipeline and returns a grounded answer together with supporting citations and citation-confidence information.
+
+---
+
+## Running the Streamlit Frontend
+
+The Streamlit frontend provides an interactive interface for the RAG system.
+
+When running outside Docker, start the API first and then launch the frontend according to its configured API URL.
+
+The interface allows users to:
+
+- Enter enterprise-policy questions
+- View generated answers
+- Inspect cited source documents
+- See citation verification status
+- View citation confidence
+
+---
+
+## Running with Docker
+
+The project includes separate containers for:
+
+- FastAPI backend
+- Streamlit frontend
+
+Docker Compose manages the two services and their internal networking.
+
+Build the images:
+
+```bash
+docker compose build
+```
+
+Start the application:
+
+```bash
+docker compose up
+```
+
+The services are exposed at:
+
+```text
+FastAPI:   http://localhost:8000
+Streamlit: http://localhost:8501
+```
+
+Inside the Compose network, the frontend communicates with the API using the service hostname rather than `localhost`.
+
+Stop the containers with:
+
+```bash
+docker compose down
+```
+
+The Docker configuration uses CPU-only PyTorch packages to reduce container size compared with unnecessary CUDA-enabled dependencies.
 
 ---
 
@@ -333,21 +476,44 @@ Current result:
 7 tests passed
 ```
 
-The tests cover:
+Coverage includes:
 
-- Healthy API state
-- Pipeline-not-ready state
-- Successful question requests
-- Empty questions
-- Missing questions
-- Invalid question types
-- Pipeline failures
+- Healthy pipeline status
+- Pipeline-not-ready status
+- Successful question answering
+- Empty-question validation
+- Missing-question validation
+- Invalid question-type validation
+- Unexpected pipeline failure handling
+
+---
+
+## Golden Evaluation Dataset
+
+The project includes an expanded golden evaluation dataset containing:
+
+```text
+Total questions:        55
+Answerable questions:   50
+Unanswerable questions: 5
+```
+
+The dataset contains:
+
+- Direct questions
+- Multi-document questions
+- Ambiguous questions
+- Deliberately unanswerable questions
+
+Each case contains expected source documents and, where applicable, a human-written reference answer.
+
+The benchmark is designed specifically for the project's enterprise-document corpus.
 
 ---
 
 ## Retrieval Evaluation
 
-Retrieval quality is evaluated using a dedicated set of answerable enterprise questions with expected source documents.
+Retrieval quality is evaluated against the 50 answerable golden questions.
 
 Run:
 
@@ -359,47 +525,143 @@ python -m evaluation.evaluate_retrieval
 
 | Metric | Result |
 |---|---:|
-| Evaluation Questions | 10 |
-| Questions With At Least One Relevant Source | 10/10 |
+| Answerable Questions | 50 |
+| Questions With At Least One Relevant Source | 50/50 |
 | Retrieval Hit Rate | 100.00% |
-| Expected Source Matches | 16/19 |
-| Overall Source Recall | 84.21% |
+| Expected Source References | 82 |
+| Expected Sources Retrieved | 66/82 |
+| Overall Source Recall | 80.49% |
 
 ### Metric Interpretation
 
 **Retrieval Hit Rate** measures whether at least one expected relevant source was retrieved for each question.
 
-A 100% hit rate means every evaluation question retrieved at least one expected source.
+A 100% hit rate means every answerable evaluation question retrieved at least one expected source.
 
-**Source Recall** measures the proportion of all expected source-document associations that were successfully retrieved.
+**Overall Source Recall** measures the proportion of all expected source-document references that appeared in the final retrieved results.
 
-The system retrieved 16 of 19 expected sources, resulting in an overall source recall of 84.21%.
+The system retrieved 66 of 82 expected sources, producing an overall source recall of 80.49%.
 
-This distinction is important because retrieving one relevant source is not the same as retrieving every relevant source.
+Therefore, a 100% hit rate does **not** mean retrieval is perfect. Some multi-document questions retrieve one expected source while missing additional relevant sources.
 
 ---
 
-## Hallucination-Resistance Evaluation
+## Chunking Strategy Evaluation
 
-The evaluation dataset also contains questions whose answers are intentionally absent from the enterprise documents.
-
-Examples include questions about:
-
-- Company annual revenue
-- Company CEO
-- Current stock price
-
-These questions are used to evaluate whether the generation layer refuses to invent unsupported information.
+Three chunk configurations were evaluated against the 50 answerable golden questions.
 
 Run:
 
 ```bash
-python -m evaluation.evaluate_generation
+python -m evaluation.evaluate_chunking
 ```
 
-The evaluator includes handling for Gemini API quota exhaustion so that evaluation stops cleanly instead of repeatedly sending requests after the quota has been exhausted.
+### Results
 
-Final generation results should be recorded only after completing the evaluation with the configured Gemini model.
+| Configuration | Chunk Size | Overlap | Generated Chunks | Hit Rate | Source Recall |
+|---|---:|---:|---:|---:|---:|
+| Small | 400 | 75 | 87 | 100.00% | **85.37%** |
+| Current | 800 | 150 | 45 | 100.00% | 80.49% |
+| Large | 1200 | 200 | 30 | 100.00% | 84.15% |
+
+The 400-character configuration achieved the highest source recall on this benchmark.
+
+However, retrieval recall alone is not sufficient evidence to declare it the best production configuration. Smaller chunks can improve source retrieval while reducing surrounding context available to the generation model.
+
+For that reason, the production configuration remains at 800 characters with 150-character overlap pending broader generation-quality evaluation.
+
+---
+
+## Generation Evaluation
+
+The generation evaluator compares generated answers with human-written golden reference answers using semantic similarity.
+
+The current pass threshold is:
+
+```text
+Semantic similarity >= 0.70
+```
+
+Semantic similarity is treated as an automated proxy for reference-answer agreement. It is **not** treated as a perfect factual-correctness metric.
+
+The evaluator also measures:
+
+- Answer pass rate
+- Average semantic similarity
+- Performance by question type
+- Hallucination resistance
+- Citation provenance confidence
+
+### Batched Evaluation
+
+Gemini API quotas can prevent all 55 questions from being evaluated in a single run.
+
+The evaluator therefore supports inclusive question ranges:
+
+```bash
+python -m evaluation.evaluate_generation --start 1 --end 15
+```
+
+Additional batches can be run with:
+
+```bash
+python -m evaluation.evaluate_generation --start 16 --end 30
+python -m evaluation.evaluate_generation --start 31 --end 45
+python -m evaluation.evaluate_generation --start 46 --end 55
+```
+
+This prevents every evaluation attempt from having to restart at Question 1.
+
+### Current Generation Status
+
+A complete 55-question generation benchmark has **not yet been completed** because the external Gemini service encountered temporary availability and free-tier quota limits during evaluation.
+
+One partial run successfully evaluated six answerable questions before quota exhaustion:
+
+```text
+Questions evaluated: 6
+Passed: 5/6
+Partial pass rate: 83.33%
+Average semantic similarity: 0.788
+```
+
+These numbers are reported only as a **partial diagnostic run** and should not be interpreted as the final generation benchmark.
+
+The full generation benchmark remains pending.
+
+---
+
+## Hallucination Resistance
+
+The golden dataset contains five deliberately unsupported questions.
+
+These test whether the generation layer refuses to invent information that does not exist in the enterprise corpus.
+
+Examples include questions about information such as:
+
+- Company annual revenue
+- Company leadership
+- Current stock price
+
+The full five-question hallucination-resistance result will be recorded after the corresponding real-generation evaluation batch is completed.
+
+---
+
+## Citation Verification
+
+The RAG pipeline extracts source citations from retrieved document metadata and verifies them against the retrieved chunks.
+
+Citation confidence is calculated as the proportion of returned citations successfully verified against retrieved evidence.
+
+A real end-to-end application test returned verified enterprise-document citations with:
+
+```text
+Citation Verification: 100%
+```
+
+This score represents **citation provenance verification only**.
+
+It does not mean the generated answer has a 100% probability of being factually correct.
 
 ---
 
@@ -409,12 +671,15 @@ The API includes handling for common failure conditions.
 
 Examples include:
 
-- Invalid or empty questions
+- Invalid questions
+- Empty questions
 - RAG pipeline initialization failures
 - LLM or external-service failures
 - Pipeline-not-ready conditions
 
-Unexpected internal errors are converted to controlled API responses rather than exposing implementation details to clients.
+Unexpected internal errors are converted to controlled API responses rather than exposing unnecessary implementation details to clients.
+
+The generation evaluator also detects common Gemini availability and quota errors and stops cleanly instead of treating unavailable API calls as failed answers.
 
 ---
 
@@ -422,16 +687,17 @@ Unexpected internal errors are converted to controlled API responses rather than
 
 Sensitive configuration is managed using environment variables.
 
-The repository excludes:
+The repository excludes items such as:
 
 - `.env`
 - Virtual environments
 - Python cache files
 - Pytest cache
 - Local ChromaDB data
-- Generated processed data
 
-A safe `.env.example` file documents the required environment variables without exposing credentials.
+A safe `.env.example` documents required configuration without exposing real credentials.
+
+API keys should never be committed to the repository or embedded directly in source code.
 
 ---
 
@@ -439,15 +705,16 @@ A safe `.env.example` file documents the required environment variables without 
 
 The current implementation has several limitations:
 
-1. The document collection is relatively small and stored locally.
-2. The vector database is built locally rather than using a managed production vector service.
-3. Retrieval does not recover every expected relevant source; current overall source recall is 84.21%.
-4. LLM generation depends on external Gemini API availability and quota.
-5. The current API does not implement authentication or authorization.
-6. Document ingestion is performed during pipeline initialization rather than through a dynamic ingestion service.
-7. Evaluation uses a relatively small manually defined question set.
-
-These limitations provide clear areas for future development.
+1. The enterprise corpus is intentionally small and project-specific.
+2. ChromaDB is used locally rather than through a managed production vector service.
+3. Retrieval does not recover every expected source; current overall source recall is 80.49%.
+4. Generation depends on external Gemini API availability and quota.
+5. The API does not currently implement authentication or authorization.
+6. Document ingestion occurs during pipeline initialization rather than through a dynamic ingestion service.
+7. The golden benchmark is manually constructed and specific to the included enterprise corpus.
+8. Semantic similarity is only an automated proxy for generation quality.
+9. The complete 55-question real-generation benchmark remains pending due to external API quota limitations.
+10. Docker deployment has been validated locally but has not yet been deployed to a managed cloud container platform.
 
 ---
 
@@ -462,12 +729,14 @@ Potential extensions include:
 - Authentication and role-based access control
 - Query and retrieval observability
 - Response caching
-- Improved retrieval tuning
+- Retrieval parameter tuning
+- Generation-aware chunk-size optimization
 - Additional retrieval metrics such as Precision@K, Recall@K, and MRR
-- Larger automated evaluation datasets
-- Containerized deployment
-- Cloud deployment
+- Larger independent evaluation datasets
+- Persistent evaluation-result storage
+- Managed cloud deployment
 - CI/CD pipelines
+- Monitoring and production telemetry
 
 ---
 
@@ -484,11 +753,17 @@ This project demonstrates practical implementation of:
 - Vector databases
 - Prompt grounding
 - Citation extraction
+- Citation provenance verification
 - Hallucination-resistance evaluation
+- Golden-dataset evaluation
 - Retrieval evaluation
+- Chunking-strategy experimentation
 - REST API development
+- Streamlit application development
 - Configuration and secret management
 - Automated API testing
+- Docker containerization
+- Multi-container application orchestration
 
 ---
 
@@ -500,10 +775,36 @@ This project demonstrates practical implementation of:
 | CrossEncoder Reranking | Complete |
 | Citation Pipeline | Complete |
 | FastAPI Integration | Complete |
+| Streamlit Frontend | Complete |
+| Docker Containerization | Complete |
+| Docker End-to-End Test | Passed |
 | API Automated Tests | 7/7 Passed |
+| Golden Evaluation Dataset | 55 Cases |
 | Retrieval Hit Rate | 100.00% |
-| Overall Source Recall | 84.21% |
-| Hallucination-Resistance Evaluation | Final validation pending |
+| Overall Source Recall | 80.49% |
+| Chunking Comparison | Complete |
+| Best Tested Chunk Source Recall | 85.37% |
+| Full Generation Evaluation | Pending API quota availability |
+
+---
+
+## Evaluation Limitations
+
+Evaluation results should be interpreted within the scope of this project.
+
+The benchmark uses a small synthetic enterprise corpus and manually constructed questions. It is useful for comparing versions of this system, but it is not a general-purpose RAG benchmark.
+
+Source-level retrieval evaluation determines whether expected documents were retrieved. It does not independently prove that every required fact or passage was present in the retrieved context.
+
+Semantic similarity provides an automated comparison between generated and reference answers but cannot fully replace human factual evaluation.
+
+External LLM availability and quota restrictions can also affect the ability to complete generation benchmarks.
+
+Detailed measured results are maintained in:
+
+```text
+evaluation/results.md
+```
 
 ---
 
