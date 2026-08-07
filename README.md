@@ -1,6 +1,20 @@
-# Hybrid RAG System for Enterprise Document Retrieval
+<h1 align="center">
+Hybrid RAG System for Enterprise Document Retrieval
+</h1>
 
-A production-oriented Retrieval-Augmented Generation (RAG) system for grounded question answering over enterprise documents.
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-REST_API-green)
+![LangChain](https://img.shields.io/badge/LangChain-RAG-orange)
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
+
+
+
+
+<p align="center">
+Production-ready Hybrid Retrieval-Augmented Generation (RAG) system for enterprise document search and grounded question answering.
+</p>
 
 The system combines dense semantic retrieval, BM25 keyword search, Reciprocal Rank Fusion (RRF), CrossEncoder reranking, Gemini-based answer generation, citation verification, REST API access, a Streamlit frontend, automated evaluation, and Docker containerization.
 
@@ -31,6 +45,83 @@ This project implements a Hybrid RAG architecture that combines:
 
 ---
 
+# 📑 Table of Contents
+
+- [Project Overview](#project-overview)
+- [Problem Statement](#problem-statement)
+- [System Architecture](#system-architecture)
+- [How the Pipeline Works](#how-the-pipeline-works)
+- [Enterprise Document Collection](#enterprise-document-collection)
+- [Project Structure](#project-structure)
+- [Technology Stack](#technology-stack)
+- [Installation](#installation)
+- [Environment Configuration](#environment-configuration)
+- [Running the API Locally](#running-the-api-locally)
+- [API Endpoints](#api-endpoints)
+- [Running the Streamlit Frontend](#running-the-streamlit-frontend)
+- [Running with Docker](#running-with-docker)
+- [Automated Testing](#automated-testing)
+- [Golden Evaluation Dataset](#golden-evaluation-dataset)
+- [Retrieval Evaluation](#retrieval-evaluation)
+- [Chunking Strategy Evaluation](#chunking-strategy-evaluation)
+- [Generation Evaluation](#generation-evaluation)
+- [Hallucination Resistance](#hallucination-resistance)
+- [Citation Verification](#citation-verification)
+- [Error Handling](#error-handling)
+- [Security and Configuration](#security-and-configuration)
+- [Current Limitations](#current-limitations)
+- [Future Improvements](#future-improvements)
+- [Key Engineering Concepts Demonstrated](#key-engineering-concepts-demonstrated)
+- [Evaluation Status](#evaluation-status)
+- [Evaluation Limitations](#evaluation-limitations)
+- [License](#license)
+
+---
+
+# 🏗️ System Architecture
+
+<p align="center">
+  <img src="docs/rag_architecture.png" alt="Hybrid RAG System Architecture" width="100%">
+</p>
+
+---
+
+# 📸 Project Demonstration
+
+This section showcases the application in action, including the API documentation, request/response flow, and the Streamlit frontend.
+
+## FastAPI Swagger Documentation
+
+<p align="center">
+  <img src="docs/images/swagger_api.png" alt="Swagger API" width="95%">
+</p>
+
+---
+
+## API Request Example
+
+<p align="center">
+  <img src="docs/images/api_request.png" alt="API Request" width="95%">
+</p>
+
+---
+
+## API Response Example
+
+<p align="center">
+  <img src="docs/images/api_response.png" alt="API Response" width="95%">
+</p>
+
+---
+
+## Streamlit Frontend Demo
+
+<p align="center">
+  <img src="docs/images/example_query.png" alt="Streamlit Demo" width="95%">
+</p>
+
+---
+
 ## Problem Statement
 
 The goal is to build a question-answering system that can:
@@ -52,49 +143,11 @@ The goal is to build a question-answering system that can:
 
 ## System Architecture
 
-```text
-Enterprise Documents
-        |
-        v
-Document Loading
-        |
-        v
-Text Chunking
-        |
-        +-----------------------+
-        |                       |
-        v                       v
-Dense Retrieval           BM25 Retrieval
-        |                       |
-        v                       |
-Vector Store                   |
-        |                       |
-        +-----------+-----------+
-                    |
-                    v
-          Reciprocal Rank Fusion
-                    |
-                    v
-          CrossEncoder Reranking
-                    |
-                    v
-             Retrieved Context
-                    |
-                    v
-              Prompt Builder
-                    |
-                    v
-          Gemini LLM Generation
-                    |
-                    v
-      Citation Extraction + Verification
-                    |
-                    v
-               FastAPI API
-                    |
-                    v
-           Streamlit Frontend
-```
+The Hybrid RAG system follows a production-style retrieval pipeline. Enterprise documents are ingested, chunked, embedded, and indexed using **ChromaDB** for dense semantic retrieval, while **BM25** performs keyword-based retrieval. Results from both retrieval methods are merged using **Reciprocal Rank Fusion (RRF)** and reranked with a **CrossEncoder** before being passed to the **Gemini LLM** for grounded answer generation. Finally, the system performs **citation extraction and verification** before returning the response through the **FastAPI backend** and **Streamlit frontend**.
+
+The architecture diagram shown earlier illustrates the complete end-to-end workflow.
+
+---
 
 ---
 
